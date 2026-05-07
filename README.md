@@ -58,7 +58,6 @@ Execute the notebooks in [`notebooks/`](notebooks/) top to bottom:
 │   ├── processed_data/    Parquet feature files (created by Phase 1-2)
 │   ├── models/            Saved XGBoost weights + hyperparameter JSON
 │   └── tables/            LaTeX tables consumed by V4.tex
-└── V4.tex                 Thesis source
 ```
 
 ## Reproducibility
