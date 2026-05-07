@@ -26,14 +26,15 @@ pip install -r requirements.txt
 
 ## Data
 
-This repo does **not** redistribute the raw segment-level CSV. Download `segment_level_data.csv` (~160 MB, ~786K records over 55 days, 3 Astana bus routes) from the original publication by Mansurova et al. (2025) and place it at the project root before running Phase 1:
+This repo does **not** redistribute the raw segment-level CSV. Download `segment_level_data.csv` (~160 MB, ~786K records over 55 days, 3 Astana bus routes) from Zenodo and place it at the project root before running Phase 1:
+
+- Data: https://zenodo.org/records/15769359
+- Paper: Mansurova, A., Mussina, A., Aubakirov, S., Nugumanova, A., & Yedilkhan, D. (2025). From raw GPS to GTFS: A real-world open dataset for bus travel time prediction. *Data*, 10(8), 119. https://doi.org/10.3390/data10080119
 
 ```
 reproducibility/
 └── segment_level_data.csv   <-- put it here
 ```
-
-> Source: Mansurova et al. (2025). *Astana bus trajectory dataset*. <!-- TODO: replace with the canonical URL / DOI from the dataset publication -->
 
 The GTFS reference files (`agency.txt`, `routes.txt`, `stops.txt`, `stop_times.txt`, `trips.txt`, `calendar_dates.txt`) under [`data/gtfs_data/`](data/gtfs_data/) are small and are committed to the repo.
 
@@ -69,4 +70,4 @@ All random operations use seed 42 (XGBoost, RandomizedSearchCV, KNN difficulty e
 Code released under the MIT License. If you use this work, please cite the thesis and the underlying dataset:
 
 - Düzgün, K., & Abdulsamad Abdulhakim, M. (2026). *Uncertainty-Aware Bus ETA Prediction Under Drift with Segment-Level Risk Decomposition*. Master's thesis, Jönköping University.
-- Mansurova et al. (2025). Astana bus trajectory dataset.
+- Mansurova, A., Mussina, A., Aubakirov, S., Nugumanova, A., & Yedilkhan, D. (2025). From raw GPS to GTFS: A real-world open dataset for bus travel time prediction. *Data*, 10(8), 119. https://doi.org/10.3390/data10080119
