@@ -1,0 +1,15 @@
+\begin{table}
+\caption{Temporal Split Strategy: Date Ranges, Record Counts, and Purpose}
+\label{tab:temporal_splits}
+\begin{tabular}{lllrlll}
+\toprule
+Split & Weeks & Date Range & Days & Segment Records & Trip Records & Purpose \\
+\midrule
+Train & W1, W2, W3 & Jul 29 - Aug 18 & 21 & 302,609 & 7,619 & XGBoost model training \\
+Calibration & W4 & Aug 19 - Aug 25 & 7 & 109,308 & 2,745 & Conformal calibration (nonconformity scores) \\
+Test Near & W5 & Aug 26 - Sep 01 & 7 & 108,358 & 2,726 & Test: minimal temporal drift \\
+Test Mid & W6 & Sep 02 - Sep 08 & 5 & 73,161 & 1,844 & Test: moderate temporal drift \\
+Test Far & W7, W8 & Sep 09 - Sep 21 & 13 & 189,283 & 4,751 & Test: maximum temporal drift \\
+\bottomrule
+\end{tabular}
+\end{table}

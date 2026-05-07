@@ -1,0 +1,16 @@
+\begin{table}
+\caption{Route-Level XGBoost Performance Across Temporal Periods}
+\label{tab:route_xgboost_performance}
+\begin{tabular}{lrrrr}
+\toprule
+ & MAE (s) & RMSE (s) & MAPE (%) & n_samples \\
+Period &  &  &  &  \\
+\midrule
+Train (W1-W3) & 744.56 & 1084.37 & 13.13 & 7619 \\
+Calibration (W4) & 785.50 & 1145.94 & 13.71 & 2745 \\
+Test-Near (W5) & 992.77 & 1979.07 & 17.45 & 2726 \\
+Test-Mid (W6) & 859.42 & 1234.93 & 15.95 & 1844 \\
+Test-Far (W7-W8) & 886.95 & 1272.18 & 15.29 & 4751 \\
+\bottomrule
+\end{tabular}
+\end{table}

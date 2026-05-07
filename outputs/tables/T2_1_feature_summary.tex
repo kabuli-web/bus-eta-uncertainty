@@ -1,0 +1,42 @@
+\begin{table}
+\caption{Feature set summary for route-level and segment-level models. Historical features use strict 7-day past-only lookback to prevent data leakage.}
+\label{tab:feature_summary}
+\begin{tabular}{llllp{5cm}l}
+\toprule
+Feature & Type & Level & Description & Source \\
+\midrule
+hour_of_day & Temporal & Both & Hour of day (0-23) & start_time \\
+minute_of_day & Temporal & Both & Minute of day (0-1439) & start_time \\
+day_of_week & Temporal & Both & Day of week (0=Mon, 6=Sun) & date \\
+is_weekend & Temporal & Both & Weekend indicator (0/1) & day_of_week \\
+hour_sin & Temporal & Both & Cyclical sin encoding of hour (period=24) & hour_of_day \\
+hour_cos & Temporal & Both & Cyclical cos encoding of hour (period=24) & hour_of_day \\
+dow_sin & Temporal & Both & Cyclical sin encoding of day (period=7) & day_of_week \\
+dow_cos & Temporal & Both & Cyclical cos encoding of day (period=7) & day_of_week \\
+route_id_encoded & Spatial & Both & Label-encoded route identifier & route_short_name \\
+direction_encoded & Spatial & Both & Binary direction indicator (0/1) & direction \\
+hist_route_mean & Historical & Route & Mean travel time from past 7 days & 7d lookback \\
+hist_route_std & Historical & Route & Std dev of travel time from past 7 days & 7d lookback \\
+hist_route_median & Historical & Route & Median travel time from past 7 days & 7d lookback \\
+hist_route_q25 & Historical & Route & 25th percentile from past 7 days & 7d lookback \\
+hist_route_q75 & Historical & Route & 75th percentile from past 7 days & 7d lookback \\
+hist_route_count & Historical & Route & Number of observations in past 7 days & 7d lookback \\
+hist_seg_mean & Historical & Segment & Mean run time from past 7 days for segment & 7d lookback \\
+hist_seg_std & Historical & Segment & Std dev of run time from past 7 days & 7d lookback \\
+hist_seg_median & Historical & Segment & Median run time from past 7 days & 7d lookback \\
+hist_seg_q25 & Historical & Segment & 25th percentile from past 7 days & 7d lookback \\
+hist_seg_q75 & Historical & Segment & 75th percentile from past 7 days & 7d lookback \\
+hist_seg_count & Historical & Segment & Number of observations in past 7 days & 7d lookback \\
+segment & Spatial & Segment & Segment number along route & raw data \\
+segment_number_normalized & Spatial & Segment & Segment position normalized to [0, 1] & segment / max_segment \\
+total_route_segments & Spatial & Segment & Total segments in this trip route & trip_id groupby \\
+cumulative_time_so_far & Trip Progress & Segment & Cumulative time of preceding segments (s) & running sum \\
+segments_completed & Trip Progress & Segment & Number of segments already traversed & cumcount \\
+fraction_route_completed & Trip Progress & Segment & Fraction of route completed (0-1) & segments_completed / total \\
+prev_seg_run_time & Lag & Segment & Run time of segment (n-1) & shift(1) \\
+prev_seg_dwell_time & Lag & Segment & Dwell time of segment (n-1) & shift(1) \\
+prev_2_seg_avg_run_time & Lag & Segment & Avg run time of segments (n-1), (n-2) & shift(1,2) \\
+prev_3_seg_avg_run_time & Lag & Segment & Avg run time of segments (n-1) to (n-3) & shift(1,2,3) \\
+\bottomrule
+\end{tabular}
+\end{table}

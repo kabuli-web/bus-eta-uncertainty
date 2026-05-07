@@ -1,0 +1,15 @@
+/venv
+
+# Raw dataset is not redistributed — download from Mansurova et al. (2025)
+segment_level_data.csv
+data/segment_level_data.csv
+
+# Python / Jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# OS / IDE
+.DS_Store
+.vscode/
+.idea/

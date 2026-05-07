@@ -1,0 +1,138 @@
+{
+  "split_strategy": {
+    "description": "Temporal split for conformal prediction under distribution shift",
+    "week_boundaries": {
+      "W1": [
+        "2024-07-29",
+        "2024-08-04"
+      ],
+      "W2": [
+        "2024-08-05",
+        "2024-08-11"
+      ],
+      "W3": [
+        "2024-08-12",
+        "2024-08-18"
+      ],
+      "W4": [
+        "2024-08-19",
+        "2024-08-25"
+      ],
+      "W5": [
+        "2024-08-26",
+        "2024-09-01"
+      ],
+      "W6": [
+        "2024-09-02",
+        "2024-09-08"
+      ],
+      "W7": [
+        "2024-09-09",
+        "2024-09-15"
+      ],
+      "W8": [
+        "2024-09-16",
+        "2024-09-21"
+      ]
+    },
+    "split_assignment": {
+      "train": [
+        "W1",
+        "W2",
+        "W3"
+      ],
+      "calibration": [
+        "W4"
+      ],
+      "test_near": [
+        "W5"
+      ],
+      "test_mid": [
+        "W6"
+      ],
+      "test_far": [
+        "W7",
+        "W8"
+      ]
+    },
+    "anomalous_dates_excluded": [
+      "2024-09-03",
+      "2024-09-04"
+    ]
+  },
+  "period_statistics": {
+    "train": {
+      "weeks": [
+        "W1",
+        "W2",
+        "W3"
+      ],
+      "date_range": [
+        "2024-07-29",
+        "2024-08-18"
+      ],
+      "num_days": 21,
+      "segment_records": 302609,
+      "trip_records": 7619,
+      "mean_travel_time_seconds": 5712.823598897493,
+      "std_travel_time_seconds": 1772.8878210885039
+    },
+    "calibration": {
+      "weeks": [
+        "W4"
+      ],
+      "date_range": [
+        "2024-08-19",
+        "2024-08-25"
+      ],
+      "num_days": 7,
+      "segment_records": 109308,
+      "trip_records": 2745,
+      "mean_travel_time_seconds": 5651.247723132969,
+      "std_travel_time_seconds": 1660.757389779463
+    },
+    "test_near": {
+      "weeks": [
+        "W5"
+      ],
+      "date_range": [
+        "2024-08-26",
+        "2024-09-01"
+      ],
+      "num_days": 7,
+      "segment_records": 108358,
+      "trip_records": 2726,
+      "mean_travel_time_seconds": 5711.399119589141,
+      "std_travel_time_seconds": 2351.7717633875773
+    },
+    "test_mid": {
+      "weeks": [
+        "W6"
+      ],
+      "date_range": [
+        "2024-09-02",
+        "2024-09-08"
+      ],
+      "num_days": 5,
+      "segment_records": 73161,
+      "trip_records": 1844,
+      "mean_travel_time_seconds": 5575.7321041214755,
+      "std_travel_time_seconds": 1639.6210673582248
+    },
+    "test_far": {
+      "weeks": [
+        "W7",
+        "W8"
+      ],
+      "date_range": [
+        "2024-09-09",
+        "2024-09-21"
+      ],
+      "num_days": 13,
+      "segment_records": 189283,
+      "trip_records": 4751,
+      "mean_travel_time_seconds": 5743.366238686593,
+      "std_travel_time_seconds": 1713.494324272675
+    }
+  }
+}
