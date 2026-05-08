@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python _make_diff.py)",
+      "Bash(python -c ' *)",
+      "Bash(pdflatex -interaction=nonstopmode v5_highlighted.tex)",
+      "Bash(pdflatex -interaction=nonstopmode v5.tex)"
+    ]
+  }
+}

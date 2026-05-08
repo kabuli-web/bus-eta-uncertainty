@@ -443,14 +443,13 @@ def get_feature_names(level: str = 'route') -> list:
             'hist_route_q25', 'hist_route_q75', 'hist_route_count',
         ]
     elif level == 'segment':
+        # Pre-trip features only: known at departure before any segment is observed.
+        # Cumulative progress and lag features are excluded because they require
+        # the bus to already be running, making them unavailable for pre-trip prediction.
         return common_features + [
             'segment', 'segment_number_normalized', 'total_route_segments',
             'hist_seg_mean', 'hist_seg_std', 'hist_seg_median',
             'hist_seg_q25', 'hist_seg_q75', 'hist_seg_count',
-            'cumulative_time_so_far', 'segments_completed',
-            'fraction_route_completed',
-            'prev_seg_run_time', 'prev_seg_dwell_time',
-            'prev_2_seg_avg_run_time', 'prev_3_seg_avg_run_time',
         ]
     else:
         raise ValueError(f"Unknown level: {level}. Use 'route' or 'segment'.")

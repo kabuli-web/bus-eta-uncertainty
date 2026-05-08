@@ -24,6 +24,7 @@ ipywidgets>=8.0
 # Statistical testing
 statsmodels>=0.14
 pingouin>=0.5
+autorank>=1.1
 
 # Utilities
 tqdm>=4.65
