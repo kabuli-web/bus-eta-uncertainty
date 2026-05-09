@@ -396,15 +396,15 @@ The final dataset comprises 782,719 segment records across 19,685 trips.
 
 Features were built from the cleaned data. All features use only information available at prediction time. Historical features use a strict past-only 7-day lookback to prevent data leakage.
 
-Temporal features (8 features): hour of day, minute of day, day of week, weekend indicator, plus cyclical sine/cosine encodings for hour and day of week. A time period classification groups hours into six categories: early morning (5--7h), morning peak (7--10h), midday (10--16h), evening peak (16--19h), evening (19--22h), and night (22--5h).
+Temporal features (8 features): Hour of day, minute of day, day of week, weekend indicator, plus cyclical sine/cosine encodings for hour and day of week. A time period classification groups hours into six categories: early morning (5--7h), morning peak (7--10h), midday (10--16h), evening peak (16--19h), evening (19--22h), and night (22--5h).
 
-Spatial features (2 for route-level, 5 for segment-level): route identifier, direction, and for the segment model also segment position, segment position normalised to $[0,1]$, and total segments in the trip.
+Spatial features (2 for route-level, 5 for segment-level): Route identifier, direction, and for the segment model also segment position, segment position normalised to $[0,1]$, and total segments in the trip.
 
-Historical statistics (6 features per level): mean, standard deviation, median, 25th and 75th percentiles, and count of travel times from the same route/segment, direction, and time period over the preceding 7 days. The 7-day window matches the weekly seasonality pattern in the data.
+Historical statistics (6 features per level): Mean, standard deviation, median, 25th and 75th percentiles, and count of travel times from the same route/segment, direction, and time period over the preceding 7 days. The 7-day window matches the weekly seasonality pattern in the data.
 
 In total, the route-level model uses 16 features and the segment-level model uses 19 features. No feature scaling was applied since XGBoost is invariant to feature scales.
 
-All features in both models are observable before a trip departs. Experiment~3 therefore operates in the same pre-departure setting as Experiments~1 and~2: the segment-level model produces an interval estimate for every segment of the planned route at the moment of departure, and these are summed to estimate total trip travel time. The segment-level decomposition introduces finer spatial granularity, not in-trip observations.
+All features in both models are observable before a trip departs. Experiment~3 therefore operates in the same pre-departure setting as Experiments~1 and~2. the segment-level model produces a point prediction for every segment of the planned route at the moment of departure, and these segment-level predictions are summed to estimate total trip travel time
 
 
 % ============================================================
@@ -449,9 +449,9 @@ Hyperparameters were selected using randomized search with 50 random configurati
 \end{tabular}
 \end{table}
 
-We used randomized search rather than grid search based on the finding by Bergstra and Bengio~\cite{bergstra2012random} that random sampling is more efficient for high-dimensional search spaces. It explores more unique values along the important dimensions instead of wasting trials on redundant combinations.
+We used randomized search rather than grid search based on the finding by Bergstra and Bengio~\cite{bergstra2012random}. Random sampling is more efficient for high-dimensional search spaces. It explores more unique values along the important dimensions instead of wasting trials on redundant combinations.
 
-For cross-validation, forward-chaining temporal splits were used: Fold~1 trains on W1 and validates on W2, Fold~2 trains on W1--W2 and validates on W3. Standard random $k$-fold would leak future information into training folds, producing optimistic error estimates. The scoring metric was MAE. After selection, the final models were retrained on the full training set (W1--W3).
+For cross-validation, forward-chaining temporal splits were used: Fold~1 trains on W1 and validates on W2. Fold~2 trains on W1--W2 and validates on W3. Standard random $k$-fold would leak future information into training folds, producing optimistic error estimates. The scoring metric was MAE. After selection, the final models were retrained on the full training set (W1--W3).
 
 % ------------------------------------------------------------
 \subsection{Conformal Prediction Framework}
@@ -509,9 +509,9 @@ However, when the data distribution changes over time, as demonstrated by the st
 \subsubsection{Validity of Conformal Guarantees in This Study}
 \label{subsubsec:guarantee_validity}
 
-Classical split conformal prediction provides marginal finite-sample coverage under exchangeability between calibration and test data. In this thesis, the temporal test design deliberately challenges that assumption: calibration uses W4 (Aug~19--25) while test uses W5--W8 (Aug~26--Sep~21), with increasing temporal separation. Coverage during the test periods is therefore treated as an empirical quantity --- whether the intervals remain close to the nominal 90\% level is a question the experiments answer, not a property the framework guarantees under drift.
+Classical split conformal prediction provides marginal finite-sample coverage under exchangeability between calibration and test data. In this thesis, the temporal test design deliberately challenges that assumption. Calibration uses W4 (Aug~19--25). Test uses W5--W8 (Aug~26--Sep~21) with increasing temporal separation. Coverage during the test periods is treated as an empirical quantity. Whether the intervals remain close to the nominal 90\% level is a question the experiments answer, not a property the framework guarantees under drift.
 
-Online recalibration, difficulty normalisation, Mondrian binning, and segment-level re-calibration are empirical interval-construction strategies. They may improve interval efficiency or reduce calibration error in practice, but they do not restore the original finite-sample guarantee without additional theoretical assumptions. Results for all methods in this thesis should be read as empirical evidence of their behaviour under this specific temporal drift design, not as theoretically guaranteed coverage levels.
+Online recalibration, difficulty normalisation, Mondrian binning, and segment-level re-calibration are empirical interval-construction strategies. They may improve interval efficiency or reduce calibration error in practice. But they do not restore the original finite-sample guarantee without additional theoretical assumptions. Results for all methods in this thesis should be read as empirical evidence of their behaviour under this specific temporal drift design, not as theoretically guaranteed coverage levels.
 
 \subsubsection{Split Conformal Prediction}
 
@@ -531,7 +531,7 @@ The baseline approach described above uses raw signed residuals to compute a sin
 
 This thesis tests three additional NCM types that aim to improve interval efficiency by adapting the width to the sample context.
 
-Mondrian: The calibration set is split into discrete bins based on categorical features. Each bin maintains its own residual distribution and quantile. A test sample receives an interval computed only from its bin's residuals. In this thesis, the bins are defined by time period (6 categories) crossed with route (3 routes), producing 15 active bins after merging a sparse night category into a global fallback. Mondrian CP is activated in \texttt{calibrated\_explanations} by passing a \texttt{bins} array to \texttt{calibrate()} and \texttt{explain\_factual()}.
+Mondrian: The calibration set is split into discrete bins based on categorical features. Each bin maintains its own residual distribution and quantile. A test sample receives an interval computed only from its bin's residuals. the bins are defined by time period (5 valid categories) crossed with route (3 routes), producing 15 active Mondrian bins. The night category was excluded due to insufficient calibration samples ($n=2$) and routed to a global fallback quantile. Mondrian CP is activated in \texttt{calibrated\_explanations} by passing a \texttt{bins} array to \texttt{calibrate()} and to \texttt{explain\_factual()}; \texttt{predict()} provides the same intervals without computing the explanation outputs that this study does not use.
 
 Normalised with Difficulty Estimator (DE) : Instead of discrete bins, each sample receives a continuous difficulty score $\sigma_i$ from a KNN-based \texttt{DifficultyEstimator} ($k=25$). Calibration residuals are divided by their difficulty scores to produce normalised residuals, from which a single normalised quantile $\hat{q}_{\text{norm}}$ is computed. At prediction time, the interval is scaled by the test sample's difficulty: $[\hat{y} - \hat{q}_{\text{norm}} \cdot \sigma,\; \hat{y} + \hat{q}_{\text{norm}} \cdot \sigma]$. Easy samples get narrow intervals, hard samples get wide intervals.
 
@@ -654,7 +654,9 @@ Experiments~1 and~2 work at the route level: the model predicts total trip time 
 
 This experiment takes a different approach by changing the prediction granularity while keeping the same pre-departure setting as Experiments~1 and~2. The segment-level XGBoost model predicts every segment of the planned route at the moment of departure using only pre-trip features, and the per-segment predictions are combined back to the route level. This design targets two goals. First, segment-level prediction errors may partially cancel during summation, producing tighter route-level residuals and narrower intervals than a direct route-level prediction. Second, the per-segment difficulty scores enable uncertainty attribution, identifying which segments contribute most to route-level uncertainty.
 
-\textbf{Why this experiment departs from the CPS approach.} Experiments~1 and~2 produce intervals through the \texttt{calibrated\_explanations} library, which wraps the Conformal Predictive System (CPS) directly around the XGBoost model output. The CPS pipeline requires that the conformal calibration step operates on the same objects the model was trained to predict. In Experiment~3, the conformal quantile is computed not on individual segment predictions but on route-level residuals obtained by summing segment predictions. Routing this aggregation step through the library pipeline would require bypassing several internal abstractions that are not designed for post-summation calibration. The manual split conformal procedure in Algorithm~\ref{alg:route_recal} is equivalent in principle --- it computes a quantile over held-out calibration residuals and applies it at prediction time --- but is implemented directly, prioritising transparency in demonstrating the residual-diversification mechanism. Specifically, the conformal quantile is computed as the $(1-\alpha)$-th percentile of the calibration residuals using \texttt{numpy.percentile} without a finite-sample correction factor. For the calibration sizes used here (350--700 trips per route-direction group), this difference from the corrected formula $\frac{\lceil(n+1)(1-\alpha)\rceil}{n}$ is negligible.
+Why this experiment departs from the CPS approach? Experiments~1 and~2 produce intervals through the \texttt{calibrated\_explanations} library, which wraps the Conformal Predictive System (CPS) directly around the XGBoost model output. The CPS pipeline requires that the conformal calibration step operates on the same objects the model was trained to predict. In Experiment~3, the conformal quantile is computed not on individual segment predictions but on route-level residuals obtained by summing segment predictions. Routing this aggregation step through the library pipeline would require bypassing several internal abstractions that are not designed for post-summation calibration. The manual split conformal procedure in Algorithm~\ref{alg:route_recal} is equivalent in principle. It computes a quantile over held-out calibration residuals and applies it at prediction time. But is implemented directly, prioritising transparency in demonstrating the residual-diversification mechanism. Methodologically, this shifts Experiment3 away from the conformal predictive system (CPS) framework used in Experiment 1 and 2. Experiment 3 uses classical split conformal regression instead. CPS calibrates an empirical predictive distribution from signed residuals and queries its tail percentiles. Conformal regression takes a different route. It computes a single conformal quantile from absolute route-level residuals. This quantile is then applied symmetrically around the point estimate.Specifically, the conformal quantile is computed as the $(1-\alpha)$-th percentile of the calibration residuals using \texttt{numpy.percentile} without a finite-sample correction factor. For the calibration sizes used here (350--700 trips per route-direction group), this difference from the corrected formula $\frac{\lceil(n+1)(1-\alpha)\rceil}{n}$ is negligible.
+
+We empirically compared the absolute-residual (symmetric) and signed-residual (asymmetric, $\alpha/2$ and $1-\alpha/2$ percentile) formulations on this dataset. At the global level the two formulations produced near identical intervals (Winkler 4{,}287 vs 4{,}284). At the per-route level, however, the absolute formulation yielded a lower Winkler Score (4{,}035 vs 4{,}097) and tighter coverage tracking (PICP 0.888 vs 0.866). The advantage stems from the smaller per-group calibration sizes (350--700 trips). At these sample sizes, absolute residuals double the effective sample on each tail and stabilise the quantile estimate. The absolute formulation is therefore retained for Algorithm~\ref{alg:route_recal}.
 
 \subsubsection{Route-Level Re-Calibration}
 
@@ -716,14 +718,13 @@ This fraction tells us what share of the total trip uncertainty comes from each 
 \label{sec:reproducibility}
 % ============================================================
 
-The full experimental pipeline is available online (to be published upon submission).\footnote{\url{https://github.com/kabuli-web/bus-eta-uncertainty}} All results in this thesis can be reproduced by running the notebooks in order, as described in the repository README.
+The full experimental pipeline is available online (to be published upon submission).\footnote{\url{https://github.com/kabuli-web/bus-eta-uncertainty}} All results in this thesis can be reproduced by running the notebooks in order as described in the repository README.
 
-\paragraph{Environment.} Python~3.10.0, run on AMD Ryzen 7~7435HS (8 cores, 3.1~GHz), 16~GB RAM. No GPU was used; all XGBoost training ran on CPU.
+Environment: Python~3.10.0, run on AMD Ryzen 7~7435HS (8 cores, 3.1~GHz), 16~GB RAM. No GPU was used; all XGBoost training ran on CPU.
 
-\paragraph{Key library versions.} \texttt{xgboost}~3.2.0, \texttt{scikit-learn}~1.7.2,\newline \texttt{calibrated-explanations}~0.11.0, \texttt{crepes}~0.9.0, \texttt{numpy}~2.2.6, \texttt{pandas}~2.3.3.
+Key library versions: xgboost~3.2.0, scikit-learn~1.7.2, calibrated-explanations~0.11.0, crepes~0.9.0, numpy~2.2.6, pandas~2.3.3.
 
-\paragraph{XGBoost hyperparameters.}
-Table~\ref{tab:hyperparams_repro} lists the final hyperparameters for both models.
+XGBoost hyperparameters: Table~\ref{tab:hyperparams_repro} lists the final hyperparameters for both models.
 Hyperparameter search used randomised search with 50 configurations and temporal forward-chaining cross-validation, as described in Section~\ref{subsec:baseline_model}.
 
 \begin{table}[H]
@@ -746,9 +747,9 @@ Hyperparameter search used randomised search with 50 configurations and temporal
 \end{tabular}
 \end{table}
 
-\paragraph{Random seeds.} All random operations use seed~42: model training (\texttt{random\_state=42}), hyperparameter search (\texttt{random\_state=42}), and \texttt{DifficultyEstimator} $k$-NN fitting (\texttt{scaler=True}, \texttt{k=25}).
+All random operations use seed~42: model training (\texttt{random\_state=42}), hyperparameter search (\texttt{random\_state=42}), and \texttt{DifficultyEstimator} $k$-NN fitting (\texttt{scaler=True}, \texttt{k=25}).
 
-\paragraph{Dataset.} Mansurova et al.~\cite{mansurova2025dataset}. The processed parquet files used for all experiments are included in the repository.
+The processed parquet files used for all experiments are included in the repository.
 
 % ============================================================
 \section{Evaluation Metrics}
